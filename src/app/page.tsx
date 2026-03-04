@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { GeneratorForm } from "@/components/generator-form";
 import { OutputPanel } from "@/components/output-panel";
 import { ProfileSelector } from "@/components/profile-selector";
-import { PostBothButton } from "@/components/post-both-button";
 import type { Platform, Provider, UserProfile } from "@/lib/types";
 import { PROVIDER_OPTIONS, PRESETS } from "@/lib/types";
 import { useStreaming } from "@/hooks/use-streaming";
@@ -83,10 +82,6 @@ export default function Home() {
 
   const currentProvider = PROVIDER_OPTIONS.find((p) => p.value === provider)!;
 
-  const xResult = states.x.isDone && states.x.result ? states.x.result.content : null;
-  const threadsResult = states.threads.isDone && states.threads.result ? states.threads.result.content : null;
-  const bothDone = xResult !== null && threadsResult !== null;
-
   return (
     <main className="min-h-screen bg-background">
       {/* Hero Header */}
@@ -146,13 +141,6 @@ export default function Home() {
           isGenerating={isGenerating}
           onRegenerate={handleRegenerate}
         />
-
-        {/* Post Both */}
-        {bothDone && (
-          <div className="max-w-md mx-auto">
-            <PostBothButton xText={xResult} threadsText={threadsResult} />
-          </div>
-        )}
       </div>
     </main>
   );
