@@ -98,6 +98,17 @@ export default function Home() {
           <p className="mt-3 text-amber-800/80 text-sm sm:text-base max-w-lg mx-auto">
             1つのネタから X と Threads に最適化された投稿を同時生成
           </p>
+          <a
+            href="https://oyuwari.notion.site/X-Threads-319206dfc7ee80d9a002da4682cba2db"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 mt-4 px-4 py-1.5 rounded-full bg-white/40 backdrop-blur-sm text-sm font-medium text-amber-900 hover:bg-white/60 transition-colors"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+            </svg>
+            説明書を見る
+          </a>
         </div>
         {/* Wave separator */}
         <div className="absolute bottom-0 left-0 right-0">
