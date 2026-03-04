@@ -10,13 +10,9 @@ interface GeneratorFormProps {
   topic: string;
   apiKey: string;
   provider: Provider;
-  enableImage: boolean;
-  geminiApiKey: string;
   onTopicChange: (value: string) => void;
   onApiKeyChange: (value: string) => void;
   onProviderChange: (value: Provider) => void;
-  onEnableImageChange: (value: boolean) => void;
-  onGeminiApiKeyChange: (value: string) => void;
   onSubmit: () => void;
   onAbort?: () => void;
   isGenerating: boolean;
@@ -26,13 +22,9 @@ export function GeneratorForm({
   topic,
   apiKey,
   provider,
-  enableImage,
-  geminiApiKey,
   onTopicChange,
   onApiKeyChange,
   onProviderChange,
-  onEnableImageChange,
-  onGeminiApiKeyChange,
   onSubmit,
   onAbort,
   isGenerating,
@@ -117,7 +109,7 @@ export function GeneratorForm({
             {topic.length}文字
           </p>
           <div className="flex gap-1">
-            {["X", "Threads", "note"].map((p) => (
+            {["X", "Threads"].map((p) => (
               <span
                 key={p}
                 className="inline-block text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium"
@@ -127,51 +119,6 @@ export function GeneratorForm({
             ))}
           </div>
         </div>
-      </div>
-
-      {/* Image Toggle */}
-      <div className="space-y-3">
-        <label className="flex items-center gap-3 cursor-pointer">
-          <button
-            type="button"
-            role="switch"
-            aria-checked={enableImage}
-            onClick={() => onEnableImageChange(!enableImage)}
-            className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ${
-              enableImage ? "bg-amber-500" : "bg-gray-200"
-            }`}
-          >
-            <span
-              className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transition-transform duration-200 ${
-                enableImage ? "translate-x-5" : "translate-x-0"
-              }`}
-            />
-          </button>
-          <span className="text-sm font-medium text-foreground">
-            note用の図解も生成する
-          </span>
-        </label>
-        {enableImage && provider !== "gemini" && (
-          <div>
-            <label
-              htmlFor="geminiApiKey"
-              className="block text-xs font-medium mb-1.5 text-amber-700"
-            >
-              画像生成用 Gemini API Key
-            </label>
-            <input
-              id="geminiApiKey"
-              type="password"
-              placeholder="AIza..."
-              value={geminiApiKey}
-              onChange={(e) => onGeminiApiKeyChange(e.target.value)}
-              className="flex h-9 w-full rounded-lg border border-amber-200 bg-amber-50/50 px-3 py-2 text-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 focus-visible:border-amber-400 transition-colors"
-            />
-            <p className="text-[11px] text-amber-600 mt-1">
-              画像生成にはGemini APIキーが必要です（テキスト生成とは別）
-            </p>
-          </div>
-        )}
       </div>
 
       {isGenerating ? (
@@ -192,7 +139,7 @@ export function GeneratorForm({
           className="w-full h-12 text-base font-bold bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-amber-950 shadow-md shadow-amber-300/30 transition-all duration-200 hover:shadow-lg hover:shadow-amber-300/40 disabled:opacity-50 disabled:shadow-none"
           size="lg"
         >
-          3メディアで展開する
+          X × Threads で投稿を作る
         </Button>
       )}
     </div>

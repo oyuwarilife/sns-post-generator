@@ -1,6 +1,5 @@
 import { buildXPrompt } from "@/lib/prompts/x-post";
 import { buildThreadsPrompt } from "@/lib/prompts/threads-post";
-import { buildNotePrompt } from "@/lib/prompts/note-article";
 import {
   encodeSSE,
   extractContentFromPartial,
@@ -8,7 +7,7 @@ import {
   getStreamFunction,
   getGenerateFunction,
 } from "@/lib/streaming";
-import type { Platform, PlatformResult, Provider } from "@/lib/types";
+import type { Platform, PlatformResult, Provider, UserProfile } from "@/lib/types";
 
 export const runtime = "edge";
 
@@ -25,20 +24,12 @@ function toPlatformResult(parsed: Record<string, unknown>): PlatformResult {
   };
 }
 
-function buildPrompt(
-  platform: Platform,
-  topic: string,
-  tone?: string,
-  targetEmotion?: string,
-  postPattern?: string
-) {
+function buildPrompt(platform: Platform, topic: string, profile: UserProfile) {
   switch (platform) {
     case "x":
-      return buildXPrompt(topic, tone, targetEmotion, postPattern);
+      return buildXPrompt(topic, profile);
     case "threads":
-      return buildThreadsPrompt(topic, tone, targetEmotion, postPattern);
-    case "note":
-      return buildNotePrompt(topic, tone, targetEmotion, postPattern);
+      return buildThreadsPrompt(topic, profile);
   }
 }
 
@@ -48,12 +39,10 @@ export async function POST(req: Request) {
     topic,
     apiKey,
     provider = "gemini" as Provider,
-    tone,
-    targetEmotion,
-    postPattern,
+    profile,
   } = body;
 
-  if (!topic || !apiKey) {
+  if (!topic || !apiKey || !profile) {
     return new Response(
       JSON.stringify({ error: "必須パラメータが不足しています" }),
       { status: 400, headers: { "Content-Type": "application/json" } }
@@ -65,10 +54,8 @@ export async function POST(req: Request) {
   // --- Non-streaming fallback ---
   if (!useStreaming) {
     const generateContent = await getGenerateFunction(provider);
-    const platforms: Platform[] = ["x", "threads", "note"];
-    const prompts = platforms.map((p) =>
-      buildPrompt(p, topic, tone, targetEmotion, postPattern)
-    );
+    const platforms: Platform[] = ["x", "threads"];
+    const prompts = platforms.map((p) => buildPrompt(p, topic, profile));
     const results = await Promise.all(
       prompts.map((p) => generateContent(apiKey, p.system, p.user))
     );
@@ -85,18 +72,12 @@ export async function POST(req: Request) {
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
-      const platforms: Platform[] = ["x", "threads", "note"];
+      const platforms: Platform[] = ["x", "threads"];
       const streamContent = await getStreamFunction(provider);
 
       const tasks = platforms.map(async (platform) => {
         try {
-          const prompt = buildPrompt(
-            platform,
-            topic,
-            tone,
-            targetEmotion,
-            postPattern
-          );
+          const prompt = buildPrompt(platform, topic, profile);
           let accumulated = "";
           let lastSentLength = 0;
 
@@ -107,7 +88,6 @@ export async function POST(req: Request) {
           )) {
             accumulated += chunk;
 
-            // Extract content field from partial JSON
             const content = extractContentFromPartial(accumulated);
             if (content.length > lastSentLength) {
               const newText = content.slice(lastSentLength);
@@ -120,7 +100,6 @@ export async function POST(req: Request) {
             }
           }
 
-          // Parse final result
           const parsed = parseJSON(accumulated);
           const result = toPlatformResult(parsed);
           controller.enqueue(

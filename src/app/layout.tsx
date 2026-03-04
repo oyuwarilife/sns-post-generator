@@ -9,9 +9,9 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "1ネタ → 3メディア展開ジェネレーター",
+  title: "X × Threads 同時投稿つくるくん",
   description:
-    "1つのネタから X / Threads / note に最適化された投稿を一括生成するツール",
+    "1つのネタから X と Threads に最適化された投稿を同時生成するツール",
 };
 
 export default function RootLayout({

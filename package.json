@@ -1,5 +1,5 @@
 {
-  "name": "media-generator",
+  "name": "sns-post-generator",
   "version": "0.1.0",
   "private": true,
   "scripts": {

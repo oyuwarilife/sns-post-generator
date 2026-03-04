@@ -1,6 +1,67 @@
-export type Platform = "x" | "threads" | "note";
+export type Platform = "x" | "threads";
 
 export type Provider = "gemini" | "anthropic" | "openai";
+
+export type Tone = "friendly" | "expert" | "casual" | "passionate";
+
+export const TONE_LABELS: Record<Tone, string> = {
+  friendly: "親しみ系",
+  expert: "専門家系",
+  casual: "カジュアル",
+  passionate: "熱量系",
+};
+
+export interface UserProfile {
+  name: string;
+  genre: string;
+  tone: Tone;
+  target: string;
+  ngWords: string[];
+  speechStyle: string;
+}
+
+export const PRESETS: UserProfile[] = [
+  {
+    name: "🏠 在宅ワーカー",
+    genre: "在宅ワーク・リモートワーク",
+    tone: "friendly",
+    target: "働き方を変えたい人",
+    ngWords: [],
+    speechStyle: "",
+  },
+  {
+    name: "💻 エンジニア",
+    genre: "技術・開発・プログラミング",
+    tone: "expert",
+    target: "同業エンジニア",
+    ngWords: [],
+    speechStyle: "",
+  },
+  {
+    name: "📈 SNSマーケター",
+    genre: "集客・マーケティング・SNS運用",
+    tone: "passionate",
+    target: "個人事業主・フリーランス",
+    ngWords: [],
+    speechStyle: "",
+  },
+  {
+    name: "✨ クリエイター",
+    genre: "創作・デザイン・クリエイティブ",
+    tone: "casual",
+    target: "クリエイティブ層",
+    ngWords: [],
+    speechStyle: "",
+  },
+  {
+    name: "👶 子育てアカウント",
+    genre: "子育て・家族・育児",
+    tone: "friendly",
+    target: "同じ境遇のパパママ",
+    ngWords: [],
+    speechStyle: "",
+  },
+];
 
 export const PROVIDER_OPTIONS: {
   value: Provider;
@@ -15,7 +76,7 @@ export const PROVIDER_OPTIONS: {
 
 export interface PlatformResult {
   content: string;
-  title?: string; // note only
+  title?: string;
   pattern: string;
   axis: string;
   score: number;
@@ -27,55 +88,10 @@ export interface GenerateRequest {
   topic: string;
   apiKey: string;
   provider: Provider;
-  tone?: string;
-  targetEmotion?: string;
-  postPattern?: string;
+  profile: UserProfile;
 }
 
 export interface GenerateResponse {
   x: PlatformResult;
   threads: PlatformResult;
-  note: PlatformResult;
 }
-
-export interface ImageResult {
-  imageDataUrl: string; // data:image/png;base64,...
-  prompt: string;
-  platform: Platform;
-}
-
-export const PLATFORM_ASPECT: Record<Platform, { label: string; suffix: string }> = {
-  x: { label: "16:9", suffix: "wide landscape 16:9 aspect ratio" },
-  threads: { label: "1:1", suffix: "square 1:1 aspect ratio" },
-  note: { label: "16:9", suffix: "wide landscape 16:9 aspect ratio" },
-};
-
-export const IMAGE_MODEL = "gemini-2.5-flash-image";
-
-export const TONE_OPTIONS = [
-  { value: "default", label: "等身大・共感（デフォルト）" },
-  { value: "honesty", label: "本音・ぶっちゃけ" },
-  { value: "reflection", label: "振り返り・内省" },
-  { value: "warmth", label: "温かい日常" },
-] as const;
-
-export const TARGET_EMOTION_OPTIONS = [
-  { value: "auto", label: "自動判定" },
-  { value: "anxiety", label: "不安・孤独・自責" },
-  { value: "freedom", label: "自由への憧れ" },
-  { value: "curiosity", label: "興味あるけど不安" },
-  { value: "guilt", label: "両立の罪悪感" },
-  { value: "selfcare", label: "自分の楽しみへの罪悪感" },
-] as const;
-
-export const POST_PATTERN_OPTIONS = [
-  { value: "auto", label: "自動判定" },
-  { value: "empathy", label: "共感型（あるある・エモ）" },
-  { value: "typeA", label: "型A（判断基準）" },
-  { value: "typeB", label: "型B（思考プロセス）" },
-  { value: "typeC", label: "型C（Before→After）" },
-  { value: "typeD", label: "型D（失敗→学び）" },
-  { value: "typeE", label: "型E（ストーリー）" },
-  { value: "typeF", label: "型F（問題提起→再定義）" },
-  { value: "typeG", label: "型G（温かい日常）" },
-] as const;

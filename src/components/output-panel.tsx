@@ -4,9 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlatformOutput } from "@/components/platform-output";
 import type { Platform } from "@/lib/types";
 import type { StreamStates } from "@/hooks/use-streaming";
-import type { ImageState } from "@/components/image-output";
 
-const PLATFORMS: Platform[] = ["x", "threads", "note"];
+const PLATFORMS: Platform[] = ["x", "threads"];
 
 function hasAnyActivity(states: StreamStates): boolean {
   return PLATFORMS.some(
@@ -14,20 +13,14 @@ function hasAnyActivity(states: StreamStates): boolean {
   );
 }
 
-export type ImageStates = Record<Platform, ImageState>;
-
 export function OutputPanel({
   states,
   isGenerating,
-  imageStates,
   onRegenerate,
-  onRegenerateImage,
 }: {
   states: StreamStates;
   isGenerating: boolean;
-  imageStates?: ImageStates;
   onRegenerate?: (platform: Platform) => void;
-  onRegenerateImage?: (platform: Platform, customPrompt?: string) => void;
 }) {
   if (!hasAnyActivity(states) && !isGenerating) {
     return null;
@@ -35,16 +28,14 @@ export function OutputPanel({
 
   return (
     <>
-      {/* Desktop: 3-column grid */}
-      <div className="hidden lg:grid lg:grid-cols-3 gap-5">
+      {/* Desktop: 2-column grid */}
+      <div className="hidden lg:grid lg:grid-cols-2 gap-5">
         {PLATFORMS.map((p) => (
           <PlatformOutput
             key={p}
             platform={p}
             streamState={states[p]}
-            imageState={imageStates?.[p]}
             onRegenerate={onRegenerate}
-            onRegenerateImage={onRegenerateImage}
           />
         ))}
       </div>
@@ -65,21 +56,13 @@ export function OutputPanel({
             >
               Threads
             </TabsTrigger>
-            <TabsTrigger
-              value="note"
-              className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:text-amber-900 data-[state=active]:shadow-sm text-amber-700"
-            >
-              note
-            </TabsTrigger>
           </TabsList>
           {PLATFORMS.map((p) => (
             <TabsContent key={p} value={p} className="mt-4">
               <PlatformOutput
                 platform={p}
                 streamState={states[p]}
-                imageState={imageStates?.[p]}
                 onRegenerate={onRegenerate}
-                onRegenerateImage={onRegenerateImage}
               />
             </TabsContent>
           ))}

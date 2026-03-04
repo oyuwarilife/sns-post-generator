@@ -3,8 +3,6 @@
 import { CopyButton } from "@/components/copy-button";
 import { PostToXButton } from "@/components/post-to-x-button";
 import { PostToThreadsButton } from "@/components/post-to-threads-button";
-import { ImageOutput } from "@/components/image-output";
-import type { ImageState } from "@/components/image-output";
 import type { Platform } from "@/lib/types";
 import type { PlatformStreamState } from "@/hooks/use-streaming";
 
@@ -23,12 +21,6 @@ const platformConfig: Record<
     icon: "@",
     gradient: "from-fuchsia-600 to-purple-700",
     accent: "text-fuchsia-100",
-  },
-  note: {
-    label: "note",
-    icon: "✎",
-    gradient: "from-emerald-600 to-teal-700",
-    accent: "text-emerald-100",
   },
 };
 
@@ -57,15 +49,11 @@ function StreamingCursor() {
 export function PlatformOutput({
   platform,
   streamState,
-  imageState,
   onRegenerate,
-  onRegenerateImage,
 }: {
   platform: Platform;
   streamState: PlatformStreamState;
-  imageState?: ImageState;
   onRegenerate?: (platform: Platform) => void;
-  onRegenerateImage?: (platform: Platform, customPrompt?: string) => void;
 }) {
   const config = platformConfig[platform];
   const { text, isStreaming, isDone, result, error } = streamState;
@@ -74,11 +62,7 @@ export function PlatformOutput({
   if (!isStreaming && !isDone && !text) return null;
 
   const hasResult = isDone && result;
-  const displayContent = hasResult
-    ? platform === "note" && result.title
-      ? `# ${result.title}\n\n${result.content}`
-      : result.content
-    : text;
+  const displayContent = hasResult ? result.content : text;
 
   return (
     <div className="rounded-2xl bg-card shadow-md shadow-amber-100/50 border border-amber-100/80 overflow-hidden transition-all hover:shadow-lg hover:shadow-amber-200/40">
@@ -135,11 +119,7 @@ export function PlatformOutput({
         {error ? (
           <div className="text-sm text-red-600 mb-4">{error}</div>
         ) : (
-          <div
-            className={`whitespace-pre-wrap text-sm leading-relaxed text-foreground/90 mb-4 ${
-              platform === "note" && hasResult ? "prose prose-sm max-w-none" : ""
-            }`}
-          >
+          <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/90 mb-4">
             {displayContent}
             {isStreaming && <StreamingCursor />}
           </div>
@@ -147,10 +127,16 @@ export function PlatformOutput({
 
         {/* Actions (only after completion) */}
         {isDone && !error && result && (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Primary: Post button */}
+            {platform === "x" && (
+              <PostToXButton text={result.content} />
+            )}
+            {platform === "threads" && (
+              <PostToThreadsButton text={result.content} />
+            )}
+            {/* Secondary: Copy & Regenerate */}
             <CopyButton text={result.content} />
-            {platform === "x" && <PostToXButton text={result.content} />}
-            {platform === "threads" && <PostToThreadsButton text={result.content} />}
             {onRegenerate && (
               <button
                 type="button"
@@ -172,15 +158,6 @@ export function PlatformOutput({
           >
             リトライ
           </button>
-        )}
-
-        {/* Image */}
-        {imageState && (
-          <ImageOutput
-            platform={platform}
-            imageState={imageState}
-            onRegenerate={onRegenerateImage}
-          />
         )}
       </div>
     </div>

@@ -23,7 +23,6 @@ export type StreamStates = Record<Platform, PlatformStreamState>;
 const initialStates = (): StreamStates => ({
   x: emptyState(),
   threads: emptyState(),
-  note: emptyState(),
 });
 
 type SSEEvent =
@@ -92,7 +91,7 @@ export function useStreaming() {
       body: Record<string, unknown>;
       platforms?: Platform[];
     }) => {
-      const { url, body, platforms = ["x", "threads", "note"] } = params;
+      const { url, body, platforms = ["x", "threads"] } = params;
 
       // Abort previous
       abortRef.current?.abort();
@@ -210,7 +209,7 @@ export function useStreaming() {
     setIsGenerating(false);
     setStates((prev) => {
       const next = { ...prev };
-      for (const p of ["x", "threads", "note"] as Platform[]) {
+      for (const p of ["x", "threads"] as Platform[]) {
         if (next[p].isStreaming) {
           next[p] = { ...next[p], isStreaming: false, isDone: true };
         }
